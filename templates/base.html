@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f2f0e8">
+    <title>{% block title %}Paper Index{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <a class="wordmark" href="{{ url_for('home') }}" aria-label="Paper Index home">
+                <span class="wordmark-mark" aria-hidden="true">P</span>
+                <span>PAPER<br><b>INDEX</b></span>
+            </a>
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}aria-current="page"{% endif %}>Catalog</a>
+                <a href="{{ url_for('list_items') }}" target="_blank" rel="noreferrer">JSON API <span aria-hidden="true">↗</span></a>
+            </nav>
+            <div class="header-status"><span></span> LOCAL COLLECTION</div>
+        </header>
+        <main>{% block content %}{% endblock %}</main>
+        <footer class="site-footer">
+            <span>Paper Index <span class="footer-dot">/</span> A small catalog API</span>
+            <a href="{{ url_for('list_items') }}">GET /api/items <span aria-hidden="true">↗</span></a>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% if item %}
+    {% set page_title = item.name ~ " | Paper Index" %}
+{% else %}
+    {% set page_title = "Item not found | Paper Index" %}
+{% endif %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+{% if item %}
+<section class="detail-page">
+    <a class="back-link" href="{{ url_for('home') }}"><span aria-hidden="true">←</span> Back to the catalog</a>
+    <div class="detail-layout">
+        <figure class="detail-image">
+            {% if item.id == 1 %}
+            <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1400&q=85" alt="Open notebook on a desk">
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=1400&q=85" alt="Pens arranged on a work surface">
+            {% endif %}
+            <figcaption>OBJECT {{ "%03d"|format(item.id) }} <span>FROM THE DAILY DESK</span></figcaption>
+        </figure>
+        <div class="detail-copy">
+            <p class="overline">ITEM RECORD / {{ "%03d"|format(item.id) }}</p>
+            <h1>{{ item.name }}</h1>
+            <p class="detail-description">A simple desk essential from the Paper Index collection.</p>
+            <dl class="item-facts">
+                <div><dt>Record ID</dt><dd>{{ item.id }}</dd></div>
+                <div><dt>Resource</dt><dd>GET /api/items/{{ item.id }}</dd></div>
+                <div><dt>Format</dt><dd>JSON</dd></div>
+            </dl>
+            <a class="button-link" href="{{ url_for('get_item', item_id=item.id) }}" target="_blank" rel="noreferrer">Open item JSON <span aria-hidden="true">↗</span></a>
+            <div class="response-preview">
+                <div class="preview-heading"><span>API RESPONSE</span><span>200 OK</span></div>
+                <pre>{{ item|tojson(indent=2) }}</pre>
+            </div>
+        </div>
+    </div>
+</section>
+{% else %}
+<section class="not-found">
+    <p class="overline">404 / RECORD NOT FOUND</p>
+    <h1>This one's<br><em>off the desk.</em></h1>
+    <p>There isn't an item with that ID in this collection.</p>
+    <a class="button-link" href="{{ url_for('home') }}">Return to the catalog <span aria-hidden="true">→</span></a>
+</section>
+{% endif %}
+{% endblock %}

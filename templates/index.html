@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Paper Index | Catalog{% endblock %}
+
+{% block content %}
+<section class="catalog-intro">
+    <div class="intro-kicker"><span>OBJECTS FOR EVERYDAY WORK</span><span>VOL. 01 <i></i> 002 ITEMS</span></div>
+    <div class="intro-grid">
+        <div class="intro-copy">
+            <p class="overline">A CONSIDERED LITTLE CATALOG</p>
+            <h1>Good tools,<br><em>well found.</em></h1>
+            <p class="intro-description">Useful things for putting thoughts somewhere. Browse the collection, or follow the JSON feed behind it.</p>
+            <a class="text-link" href="{{ url_for('list_items') }}">Explore the raw API <span aria-hidden="true">↗</span></a>
+        </div>
+        <figure class="intro-image">
+            <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=85" alt="A pen resting on a page of handwritten notes">
+            <figcaption><span>THE DAILY DESK</span><span>FIG. 001</span></figcaption>
+        </figure>
+    </div>
+    <div class="intro-rule"><span>TOOLS TO THINK WITH</span><span>SCROLL TO EXPLORE ↓</span></div>
+</section>
+
+<section class="collection" aria-labelledby="collection-title">
+    <div class="collection-heading">
+        <div>
+            <p class="overline">THE COLLECTION <span class="heading-count">02</span></p>
+            <h2 id="collection-title">On the desk</h2>
+        </div>
+        <label class="search-control">
+            <span class="sr-only">Search items</span>
+            <input id="item-search" type="search" placeholder="Find an item" autocomplete="off">
+            <span class="search-key" aria-hidden="true">⌕</span>
+        </label>
+    </div>
+
+    <div class="item-grid" id="item-grid">
+        {% for item in items %}
+        <a class="item-card" href="{{ url_for('item_page', item_id=item.id) }}" data-item-name="{{ item.name|lower }}">
+            <div class="item-image-wrap">
+                {% if item.id == 1 %}
+                <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1000&q=85" alt="Open notebook on a desk" loading="lazy">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=1000&q=85" alt="Pens arranged on a work surface" loading="lazy">
+                {% endif %}
+                <span class="image-index">NO. {{ "%02d"|format(item.id) }}</span>
+                <span class="image-arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="item-card-meta"><span>DESK ESSENTIAL</span><span>RECORD {{ "%03d"|format(item.id) }}</span></div>
+            <h3>{{ item.name }}</h3>
+            <span class="item-card-link">View item <span aria-hidden="true">→</span></span>
+        </a>
+        {% endfor %}
+    </div>
+    <p class="no-results" id="no-results" hidden>No items match that search.</p>
+    <p class="collection-footnote">A small selection, returned as JSON at <a href="{{ url_for('list_items') }}">/api/items</a>.</p>
+</section>
+
+<script>
+    const searchInput = document.querySelector("#item-search");
+    const itemCards = [...document.querySelectorAll("[data-item-name]")];
+    const noResults = document.querySelector("#no-results");
+
+    searchInput.addEventListener("input", () => {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+        for (const card of itemCards) {
+            const matches = card.dataset.itemName.includes(query);
+            card.hidden = !matches;
+            visibleCount += Number(matches);
+        }
+        noResults.hidden = visibleCount !== 0;
+    });
+</script>
+{% endblock %}
