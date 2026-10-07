@@ -1,78 +1,116 @@
-# API Overview
+# Paper Index Overview
 
-This project is a small Flask REST API for retrieving a sample list of items. It returns JSON and currently exposes read-only endpoints.
+Paper Index is a lightweight Flask web application that presents a small catalog of desk essentials and exposes the same data through JSON API endpoints. The product is intentionally simple: it shows a clean browser-based catalog, lets users click into individual items, and offers a readable API for the underlying data.
 
-## Features
+## What the product does
 
-- List all sample items.
-- Retrieve one item by its integer ID.
-- Return a JSON 404 error when the requested item does not exist.
-- Browse a designed catalog at `/`, search the items, and open an individual detail page at `/items/<id>`.
-- Reject write requests such as POST, PUT, PATCH, and DELETE. Flask also handles HEAD and OPTIONS automatically.
+The app serves two main experiences:
 
-The sample catalog contains a Notebook (ID 1) and a Pen (ID 2). Data is stored in memory, so it resets when the app restarts. There is no database or item-editing functionality.
+- A catalog homepage that displays a curated list of items
+- Individual detail pages for each item in the collection
+- A machine-readable API that returns the same catalog data as JSON
 
-## Start the API
+In the current version, the catalog includes a few everyday items such as a notebook and a pen. The collection is intentionally minimal, making it easy to understand how the app works without extra database or infrastructure complexity.
 
-Open PowerShell in the project directory. The workspace's virtual environment can be activated with:
+## How it works
 
-```powershell
-.\.venv\Scripts\Activate.ps1
+The application is built with Flask, a lightweight Python web framework.
+
+### 1. App entry point
+
+The main logic lives in `app.py`. This file:
+
+- creates the Flask app
+- defines the catalog data as a Python list
+- registers routes for the web pages and API endpoints
+- runs the development server when the script is launched directly
+
+### 2. In-memory data source
+
+The product stores its records in a Python list named `ITEMS`:
+
+```python
+ITEMS = [
+    {"id": 1, "name": "Notebook"},
+    {"id": 2, "name": "Pen"},
+]
 ```
 
-If PowerShell blocks the activation script, allow it for the current terminal process, then activate:
+This design keeps the project easy to run and easy to understand. The data resets whenever the server restarts, because it is not persisted to a database.
 
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-.\.venv\Scripts\Activate.ps1
+### 3. Browser routes
+
+The web app exposes these page routes:
+
+- `/` — the main catalog page
+- `/items/<int:item_id>` — the detail page for one item
+
+The homepage renders a template called `templates/index.html`, which organizes the catalog into a visual product listing. The item page renders `templates/item.html`, which shows a larger view of one selected product and includes a JSON preview for that record.
+
+### 4. API routes
+
+The app also exposes read-only JSON endpoints:
+
+- `GET /api/items` — returns the full list of items
+- `GET /api/items/<int:item_id>` — returns one item by ID
+
+These routes use Flask's `jsonify` helper to return structured JSON responses.
+
+If the item ID does not exist, the API responds with a `404` status and an error payload such as:
+
+```json
+{"error": "Item not found"}
 ```
 
-Install dependencies and start the local development server:
+## Product flow
+
+A typical user flow looks like this:
+
+1. The user opens the landing page at `/`.
+2. The homepage renders the collection of items using Jinja templates.
+3. The user clicks an item card or navigates directly to `/items/1`.
+4. The app searches the in-memory list for the matching item ID.
+5. If the item exists, the detail page is shown; otherwise, a 404 page is displayed.
+6. The same data can also be used programmatically through the API endpoints.
+
+## Frontend behavior
+
+The homepage includes a simple client-side search box. As the user types, the script filters item cards in the browser without reloading the page. This is a lightweight enhancement that makes the catalog feel more polished while keeping the backend simple.
+
+## Why this product is useful
+
+Paper Index is a good example of a minimal product that demonstrates:
+
+- Flask route handling
+- HTML template rendering
+- JSON API design
+- simple product catalog patterns
+- separate frontend and API concerns in a small codebase
+
+It is designed for learning, prototyping, and understanding how a basic web app can expose both user-friendly pages and machine-readable data.
+
+## How to run it
+
+From the project directory:
 
 ```powershell
 python -m pip install -r requirements.txt
 python app.py
 ```
 
-The visual catalog is available at `http://127.0.0.1:5000/`; the JSON list remains at `http://127.0.0.1:5000/api/items`. Keep the terminal running while browsing or making requests.
+Then open:
 
-## Endpoints
+```text
+http://127.0.0.1:5000/
+```
 
-### List items
-
-`GET /api/items`
+You can also test the API directly with `curl`:
 
 ```powershell
 curl.exe http://127.0.0.1:5000/api/items
-```
-
-Returns an array of items:
-
-```json
-[
-  {"id": 1, "name": "Notebook"},
-  {"id": 2, "name": "Pen"}
-]
-```
-
-### Get an item
-
-`GET /api/items/<id>`
-
-```powershell
 curl.exe http://127.0.0.1:5000/api/items/1
 ```
 
-Returns the matching item as JSON:
+## Summary
 
-```json
-{"id": 1, "name": "Notebook"}
-```
-
-For an unknown ID, such as `999`, the API returns HTTP 404:
-
-```json
-{"error": "Item not found"}
-```
-
-This Flask development server is for local development, not production deployment.
+Paper Index is a small Flask-based catalog application that blends a polished, browser-friendly interface with straightforward API endpoints. Its architecture is intentionally simple: static data, clear route definitions, and easy-to-read templates. This makes it an ideal example for learning how a web product can serve both human users and API clients from the same underlying data source.
